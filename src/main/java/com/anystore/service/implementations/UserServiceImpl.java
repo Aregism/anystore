@@ -1,8 +1,11 @@
 package com.anystore.service.implementations;
 
+import com.anystore.model.UserStorage;
 import com.anystore.model.User;
+import com.anystore.model.enums.DeleteType;
 import com.anystore.model.enums.UserStatus;
 import com.anystore.repository.UserRepository;
+import com.anystore.repository.UserStorageRepository;
 import com.anystore.service.interfaces.UserService;
 import com.anystore.util.exception.*;
 import com.anystore.util.helper.UserServiceHelper;
@@ -114,5 +117,25 @@ public class UserServiceImpl implements UserService {
         } else {
             throw new UnknownException("Something unexpected happened. Please try again.");
         }
+    }
+
+    @Override
+    @Transactional
+    public void deleteAccount(Principal principal, String password) {
+        User caller = userRepository.getByEmail(principal.getName());
+        if (passwordEncoder.matches(password, caller.getPassword())) {
+            UserStorage userStorage = userHelper.createUserDeletionStorage(caller, DeleteType.SELF_DELETED);
+            caller.setUserStatus(UserStatus.DELETED);
+            caller.setEmail("Deleted account " + caller.getId());
+            userHelper.processDeletion(caller, userStorage);
+        }
+    }
+
+    @Override
+    public void adminDeleteAccount(User user) {
+        UserStorage userStorage = userHelper.createUserDeletionStorage(user, DeleteType.ADMIN_DELETED);
+        user.setUserStatus(UserStatus.DELETED);
+        user.setEmail("Deleted account " + user.getId());
+        userHelper.processDeletion(user, userStorage);
     }
 }

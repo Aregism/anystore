@@ -4,6 +4,7 @@ import com.anystore.model.User;
 import com.anystore.model.enums.UserStatus;
 import com.anystore.repository.UserRepository;
 import com.anystore.service.interfaces.AdminService;
+import com.anystore.service.interfaces.UserService;
 import com.anystore.util.annotations.NotRecommended;
 import com.anystore.util.exception.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,9 @@ public class AdminServiceImpl implements AdminService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private UserService userService;
 
     @Override
     public User getById(int id) throws NotFoundException {
@@ -69,17 +73,13 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public void markAccountDeleted(int id) {
         User fromDB = userRepository.getById(id);
-        fromDB.setUserStatus(UserStatus.DELETED);
-        fromDB.setEmail(Integer.toString(fromDB.getId()));
-        userRepository.save(fromDB);
+        userService.adminDeleteAccount(fromDB);
     }
 
     @Override
     public void markAccountDeleted(String email) {
         User fromDB = userRepository.getByEmail(email);
-        fromDB.setUserStatus(UserStatus.DELETED);
-        fromDB.setEmail(Integer.toString(fromDB.getId()));
-        userRepository.save(fromDB);
+        userService.adminDeleteAccount(fromDB);
     }
 
     @Override

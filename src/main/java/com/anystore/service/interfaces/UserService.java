@@ -15,4 +15,7 @@ public interface UserService {
 
     void confirmPasswordChange(Principal principal, String password1, String password2, String token) throws TokenMismatchException, TokenTimedOutException, PasswordMismatchException, UnknownException, NullUserException;
 
+    void deleteAccount(Principal principal, String password);
+
+    void adminDeleteAccount(User user);
 }

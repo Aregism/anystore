@@ -1,8 +1,11 @@
 package com.anystore.util.helper;
 
+import com.anystore.model.UserStorage;
 import com.anystore.model.User;
+import com.anystore.model.enums.DeleteType;
 import com.anystore.model.enums.UserStatus;
 import com.anystore.repository.UserRepository;
+import com.anystore.repository.UserStorageRepository;
 import com.anystore.service.interfaces.AuthorityService;
 import com.anystore.util.exception.DuplicateException;
 import com.anystore.util.mailing.CustomMailSender;
@@ -31,6 +34,9 @@ public class UserServiceHelper {
 
     @Autowired
     private CustomMailSender mailSender;
+
+    @Autowired
+    private UserStorageRepository userStorageRepository;
 
     public boolean userBodyIsValid(User user) throws DuplicateException {
         if (userRepository.getByEmail(user.getEmail()) != null) {
@@ -64,17 +70,33 @@ public class UserServiceHelper {
     }
 
     public void setup(User user) {
-        user.setAuthorities(Set.of(authorityService.getByRole("ROLE_USER")));
-        user.setUserStatus(UserStatus.UNVERIFIED);
-        user.setActivationCode(generateToken());
-        mailSender.sendEmail("Account activation",
-                "Welcome to anystore!\n\nYour account activation code is: " +
-                        user.getActivationCode() + "\n\nThis code will expire in 1 week.", user.getEmail());
-        user.setCodeSentDate(LocalDate.now());
-        user.setCodeSentTime(LocalTime.now());
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userRepository.save(user);
+        UserStorage storage = userStorageRepository.getByEmail(user.getEmail());
+        if (storage != null) {
+            User existedUser = userRepository.getById(storage.getId());
+            existedUser.setEmail(user.getEmail());
+            existedUser.setPassword(passwordEncoder.encode(user.getPassword()));
+            existedUser.setUserStatus(UserStatus.UNVERIFIED);
+            existedUser.setActivationCode(generateToken());
+            mailSender.sendEmail("Account activation",
+                    "We are thrilled to have you back at anystore!\n\nYour account activation code is: " +
+                            user.getActivationCode() + "\n\nThis code will expire in 1 week.", existedUser.getEmail());
+            existedUser.setCodeSentDate(LocalDate.now());
+            existedUser.setCodeSentTime(LocalTime.now());
+            userRepository.save(existedUser);
+        } else {
+            user.setAuthorities(Set.of(authorityService.getByRole("ROLE_USER")));
+            user.setUserStatus(UserStatus.UNVERIFIED);
+            user.setActivationCode(generateToken());
+            mailSender.sendEmail("Account activation",
+                    "Welcome to anystore!\n\nYour account activation code is: " +
+                            user.getActivationCode() + "\n\nThis code will expire in 1 week.", user.getEmail());
+            user.setCodeSentDate(LocalDate.now());
+            user.setCodeSentTime(LocalTime.now());
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            userRepository.save(user);
+        }
     }
+
 
     public void resendCode(User caller) {
         caller.setActivationCode(generateToken());
@@ -84,5 +106,23 @@ public class UserServiceHelper {
         mailSender.sendEmail("Account activation",
                 "Welcome back to anystore!\n\nYour new account activation code is: " +
                         caller.getActivationCode() + "\n\nThis code will expire in 1 week.", caller.getEmail());
+    }
+
+    public UserStorage createUserDeletionStorage(User caller, DeleteType deleteType) {
+        UserStorage userStorage = new UserStorage();
+        userStorage.setId(caller.getId());
+        userStorage.setEmail(caller.getEmail());
+        userStorage.setDateDeleted(LocalDate.now());
+        userStorage.setTimeDeleted(LocalTime.now());
+        userStorage.setDeleteType(deleteType);
+        return userStorage;
+    }
+
+    public void processDeletion(User user, UserStorage storage) {
+        userRepository.save(user);
+        userStorageRepository.save(storage);
+        mailSender.sendEmail("Farewell",
+                "We are sorry to see You go. Hope to see You back soon!",
+                user.getEmail());
     }
 }
