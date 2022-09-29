@@ -1,18 +1,19 @@
 package com.anystore.service.interfaces;
 
 import com.anystore.model.User;
+import com.anystore.util.exception.NotFoundException;
 
 import java.util.List;
 
 public interface AdminService {
 
-    User getById(int id);
+    User getById(int id) throws NotFoundException;
 
-    User getByEmail(String email);
+    User getByEmail(String email) throws NotFoundException;
 
-    User getByToken(String token);
+    User getByToken(String token) throws NotFoundException;
 
-    User getByActivationCode(String code);
+    User getByActivationCode(String code) throws NotFoundException;
 
     List<User> getAll();
 

@@ -3,6 +3,7 @@ package com.anystore.config;
 import com.anystore.model.Authority;
 import com.anystore.model.User;
 import com.anystore.service.interfaces.AdminService;
+import com.anystore.util.exception.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -24,7 +25,12 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String name) throws UsernameNotFoundException {
-        User user = adminService.getByEmail(name);
+        User user = null;
+        try {
+            user = adminService.getByEmail(name);
+        } catch (NotFoundException e) {
+            throw new UsernameNotFoundException("Wrong username: " + name);
+        }
         if (user == null) {
             throw new UsernameNotFoundException("Wrong username: " + name);
         }

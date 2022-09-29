@@ -7,9 +7,9 @@ import java.security.Principal;
 
 public interface UserService {
 
-    void save(User user) throws DuplicateException;
+    void save(User user) throws DuplicateException, InvalidFieldsException;
 
-    void verify(Principal principal,String activationCode) throws TokenTimedOutException, TokenMismatchException, UnknownException, NullUserException;
+    void verify(Principal principal, String activationCode) throws TokenTimedOutException, TokenMismatchException, UnknownException, NullUserException;
 
     void requestPasswordChange(Principal principal, String password) throws IncorrectUsernameOrPasswordException, NullUserException;
 

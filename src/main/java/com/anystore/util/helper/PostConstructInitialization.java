@@ -35,10 +35,7 @@ public class PostConstructInitialization {
 
     static {
         superadminAuthority.setRole("ROLE_SUPERADMIN");
-        superadminAuthority.setRole("ROLE_ADMIN");
-        superadminAuthority.setRole("ROLE_USER");
         adminAuthority.setRole("ROLE_ADMIN");
-        adminAuthority.setRole("ROLE_USER");
         userAuthority.setRole("ROLE_USER");
     }
 

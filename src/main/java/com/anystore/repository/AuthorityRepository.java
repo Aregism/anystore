@@ -6,4 +6,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AuthorityRepository extends JpaRepository<Authority, Integer> {
+
+    Authority getById(int id);
+
+    Authority getByRole(String role);
 }

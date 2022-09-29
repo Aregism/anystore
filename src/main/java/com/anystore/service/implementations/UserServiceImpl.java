@@ -33,9 +33,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void save(User user) throws DuplicateException {
+    public void save(User user) throws DuplicateException, InvalidFieldsException {
         if (userHelper.userBodyIsValid(user)) {
+            userHelper.setup(user);
             userRepository.save(user);
+        } else {
+            throw new InvalidFieldsException("One or more pieces of entered information are invalid.");
         }
     }
 
@@ -54,6 +57,7 @@ public class UserServiceImpl implements UserService {
             fromDb.setAccountActivatedTime(LocalTime.now());
             userRepository.save(fromDb);
         } else if (!userHelper.codeIsValid(caller)) {
+            userHelper.resendCode(caller);
             throw new TokenTimedOutException("Activation code has timed out.");
         } else if (caller.getActivationCode().equals(code)) {
             throw new TokenMismatchException("Activation code is invalid.");
@@ -84,7 +88,6 @@ public class UserServiceImpl implements UserService {
                     caller.getEmail());
             throw new IncorrectUsernameOrPasswordException("Incorrect password.");
         }
-
     }
 
     @Override

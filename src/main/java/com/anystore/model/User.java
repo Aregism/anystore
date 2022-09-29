@@ -45,14 +45,14 @@ public class User {
     private Set<Authority> authorities;
 
     @Column(name = "dateregistered")
-    private LocalDate dateRegistered;
+    private LocalDate dateRegistered = LocalDate.now();
 
     @Column(name = "timeregistered")
-    private LocalTime timeRegistered;
+    private LocalTime timeRegistered = LocalTime.now();
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
-    private UserStatus userStatus;
+    private UserStatus userStatus = UserStatus.UNVERIFIED;
 
     @Column(name = "activationcode")
     private String activationCode;
