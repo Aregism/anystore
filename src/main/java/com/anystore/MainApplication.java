@@ -9,5 +9,3 @@ public class MainApplication {
         SpringApplication.run(MainApplication.class, args);
     }
 }
-
-// TODO: 24-Sep-22 Add Exceptions for User and Admin services

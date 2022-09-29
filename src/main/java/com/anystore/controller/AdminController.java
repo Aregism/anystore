@@ -2,6 +2,7 @@ package com.anystore.controller;
 
 import com.anystore.model.User;
 import com.anystore.service.interfaces.AdminService;
+import com.anystore.util.annotations.NotRecommended;
 import com.anystore.util.exception.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +25,6 @@ public class AdminController {
     }
 
     @GetMapping("/by-email")
-    // TODO: 28-Sep-22 Add not found exception
     public ResponseEntity<User> getByEmail(@RequestParam String email) throws NotFoundException {
         return ResponseEntity.ok(adminService.getByEmail(email));
     }
@@ -44,6 +44,8 @@ public class AdminController {
         return ResponseEntity.ok(adminService.getAll());
     }
 
+    @NotRecommended
+    @RolesAllowed({"ROLE_SUPERADMIN"})
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteById(@PathVariable int id) {
         adminService.deleteUser(id);
@@ -68,7 +70,7 @@ public class AdminController {
         return ResponseEntity.ok().build();
     }
 
-    @PatchMapping("/ban/{id}")
+    @PatchMapping("/ban")
     public ResponseEntity<Void> ban(@RequestParam String email) {
         adminService.ban(email);
         return ResponseEntity.ok().build();

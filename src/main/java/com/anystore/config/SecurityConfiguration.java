@@ -30,9 +30,9 @@ public class SecurityConfiguration {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeRequests(auth -> {
-                    auth.antMatchers(HttpMethod.GET,"/").permitAll();
-                    auth.antMatchers("/user").hasRole("USER");
-                    auth.antMatchers("/admin").hasRole("ADMIN");
+                    auth.antMatchers(HttpMethod.POST,"/user/register").permitAll();
+                    auth.antMatchers("/admin").hasRole("ROLE_ADMIN");
+                    auth.antMatchers("/admin").hasRole("ROLE_SUPERADMIN");
                 })
                 .httpBasic(withDefaults())
                 .build();

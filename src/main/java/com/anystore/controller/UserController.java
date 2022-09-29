@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.security.RolesAllowed;
 import java.security.Principal;
@@ -17,7 +18,7 @@ import java.security.Principal;
 @RequestMapping("/users")
 @RolesAllowed({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPERADMIN"})
 public class UserController {
-    // TODO: 28-Sep-22 Add @RequestParam, @requestBody and @pathVariable where necessary
+
     @Autowired
     private UserService userService;
 
@@ -28,19 +29,23 @@ public class UserController {
     }
 
     @PostMapping("/verify")
-    public ResponseEntity<Void> verify(Principal principal, String code) throws TokenMismatchException, NullUserException, TokenTimedOutException, UnknownException {
+    public ResponseEntity<Void> verify(Principal principal, @RequestParam String code) throws TokenMismatchException, NullUserException, TokenTimedOutException, UnknownException {
         userService.verify(principal, code);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/pw-change-request")
-    public ResponseEntity<Void> requestPasswordChange(Principal principal, String password) throws NullUserException, IncorrectUsernameOrPasswordException {
+    public ResponseEntity<Void> requestPasswordChange(Principal principal, @RequestParam String password) throws NullUserException, IncorrectUsernameOrPasswordException {
         userService.requestPasswordChange(principal, password);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/pw-change-confirm")
-    public ResponseEntity<Void> confirmPasswordChange(Principal principal, String password1, String password2, String token) throws TokenMismatchException, NullUserException, TokenTimedOutException, PasswordMismatchException, UnknownException {
+    public ResponseEntity<Void> confirmPasswordChange(
+            Principal principal,
+            @RequestParam String password1,
+            @RequestParam String password2,
+            @RequestParam String token) throws TokenMismatchException, NullUserException, TokenTimedOutException, PasswordMismatchException, UnknownException {
         userService.confirmPasswordChange(principal, password1, password2, token);
         return ResponseEntity.ok().build();
     }
