@@ -31,8 +31,8 @@ public class SecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeRequests(auth -> {
                     auth.antMatchers(HttpMethod.POST,"/user/register").permitAll();
-                    auth.antMatchers("/admin").hasRole("ROLE_ADMIN");
-                    auth.antMatchers("/admin").hasRole("ROLE_SUPERADMIN");
+                    auth.antMatchers("/admin").hasRole("ADMIN");
+                    auth.antMatchers("/admin").hasRole("SUPERADMIN");
                 })
                 .httpBasic(withDefaults())
                 .build();

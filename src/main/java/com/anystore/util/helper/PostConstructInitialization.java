@@ -4,6 +4,7 @@ import com.anystore.model.enums.UserStatus;
 import com.anystore.repository.AuthorityRepository;
 import com.anystore.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalDate;
@@ -14,6 +15,7 @@ import java.util.Set;
 import static com.anystore.model.Authority.*;
 import static com.anystore.model.User.superadminUser;
 
+@Component
 public class PostConstructInitialization {
 
     @Autowired
@@ -27,6 +29,7 @@ public class PostConstructInitialization {
         superadminUser.setLastName("Grigoryan");
         superadminUser.setEmail("aregism@gmail.com");
         superadminUser.setPassword("password");
+        superadminUser.setDateOfBirth(LocalDate.EPOCH);
         superadminUser.setUserStatus(UserStatus.VERIFIED);
         superadminUser.setAccountActivatedDate(LocalDate.now());
         superadminUser.setAccountActivatedTime(LocalTime.now());
